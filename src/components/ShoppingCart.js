@@ -1,5 +1,9 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { Panel, Table, Button, Glyphicon } from 'react-bootstrap';
+
+
+import { removeFromCart } from '../redux/actionCreators';
+import { connect } from 'react-redux'
 
 const styles = {
   footer: {
@@ -8,45 +12,48 @@ const styles = {
 }
 
 
-class ShoppingCart extends Component {
-  constructor() {
-    super();
-    this.removeFromCart = this.removeFromCart.bind(this);
+const ShoppingCart = (props) => {
 
-    this.state = {
-      cart: []
-    }
-  }
 
-  render() {
-    return (
-      <Panel header="Shopping Cart">
-        <Table fill>
-          <tbody>
-            {this.state.cart.map(product =>
-              <tr key={product.id}>
-                <td>{product.name}</td>
-                <td className="text-right">${product.price}</td>
-                <td className="text-right"><Button bsSize="xsmall" bsStyle="danger" onClick={() => this.removeFromCart(product)}><Glyphicon glyph="trash" /></Button></td>
-              </tr>
-            )}
-          </tbody>
-          <tfoot>
-            <tr>
-              <td colSpan="4" style={styles.footer}>
-                Total: ${this.state.cart.reduce((sum, product) => sum + product.price, 0)}
-              </td>
+  return (
+    <Panel header="Shopping Cart">
+      <Table fill>
+        <tbody>
+          {props.cart.map(product =>
+            <tr key={product.id}>
+              <td>{product.name}</td>
+              <td className="text-right">${product.price}</td>
+              <td className="text-right"><Button bsSize="xsmall" bsStyle="danger" onClick={() => props.removeFromCart(product)}><Glyphicon glyph="trash" /></Button></td>
             </tr>
-          </tfoot>
-        </Table>
+          )}
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colSpan="4" style={styles.footer}>
+              Total: ${props.cart.reduce((sum, product) => sum + product.price, 0)}
+            </td>
+          </tr>
+        </tfoot>
+      </Table>
 
-      </Panel>
-    )
-  }
+    </Panel>
+  )
 
-  removeFromCart(product) {
 
-  }
 }
 
-export default ShoppingCart;
+const mapStateToProps = state => {
+  return {
+    cart: state.cart
+  };
+};
+
+const mapDispatchToProps = dispatch => {
+  return {
+    removeFromCart(product) {
+      dispatch(removeFromCart(product));
+    }
+  };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(ShoppingCart);
